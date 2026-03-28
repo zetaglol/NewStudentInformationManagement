@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="NewStudentInformationManagement/NewStudentInformationManagement.csproj" />
+  <Project Path="StudentManagementDataService/StudentManagementDataService.csproj" />
+  <Project Path="StudentManagementModels/StudentManagementModels.csproj" />
 </Solution>
