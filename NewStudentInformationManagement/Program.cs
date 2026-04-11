@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using StudentManagementAppService;
 using StudentManagementDataService;
 using StudentManagementModels;
 
@@ -9,7 +10,8 @@ namespace Student_Info_Management
     {
         static void Main(string[] args)
         {
-            var service = new StudentDataService();
+            var dataService = new StudentDataService();
+            var appService = new StudentAppService(dataService);
             int choice;
 
             do
@@ -33,19 +35,77 @@ namespace Student_Info_Management
                 switch (choice)
                 {
                     case 1:
-                        service.ViewStudents();
+                        dataService.ViewStudents();
                         break;
 
                     case 2:
-                        service.Add();
+                        Student newStudent = ReadStudentInput(appService);
+
+                        if (!appService.AddStudent(newStudent))
+                        {
+                            Console.WriteLine("A student with this Student ID already exists.");
+                            Console.WriteLine();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Student Added Successfully!");
+                            Console.WriteLine();
+                        }
                         break;
 
                     case 3:
-                        service.Update();
+                        Console.Write("Enter Student ID: ");
+                        string updateId = Console.ReadLine();
+
+                        var existing = appService
+                            .GetAllStudents()
+                            .FirstOrDefault(s => s.StudentID.Trim().ToLower() == updateId.Trim().ToLower());
+
+                        if (existing == null)
+                        {
+                            Console.WriteLine("Student not found.\n");
+                            break;
+                        }
+
+                        Student updatedStudent = new Student
+                        {
+                            StudentID = updateId
+                        };
+
+                        Console.Write("Name: ");
+                        updatedStudent.Name = Console.ReadLine();
+
+                        Console.Write("Course: ");
+                        updatedStudent.Course = Console.ReadLine();
+
+                        Console.Write("Year: ");
+                        updatedStudent.Year = Console.ReadLine();
+
+                        Console.Write("Contact No.: ");
+                        updatedStudent.ContactNo = Console.ReadLine();
+
+                        Console.Write("Email: ");
+                        updatedStudent.Email = Console.ReadLine();
+
+                        Console.Write("Address: ");
+                        updatedStudent.Address = Console.ReadLine();
+
+                        Console.Write("Date of Birth: ");
+                        updatedStudent.DateOfBirth = Console.ReadLine();
+
+                        appService.UpdateStudent(updatedStudent);
+                        
+                        Console.WriteLine("Updated Successfully!\n");
                         break;
 
                     case 4:
-                        service.DeleteStudent();
+                        Console.Write("Enter Student ID: ");
+                        string deleteId = Console.ReadLine();
+
+                        if (!appService.DeleteStudent(deleteId))
+                            Console.WriteLine("Student not found.");
+                        else
+                            Console.WriteLine("Deleted Successfully!");
                         break;
 
                     case 5:
@@ -57,7 +117,54 @@ namespace Student_Info_Management
                         break;
                 }
             } while (choice != 5);
+        }
 
+        private static Student ReadStudentInput(StudentAppService appService)
+        {
+            Student student = new Student();
+
+            while (true)
+            {
+                Console.Write("Student Number: ");
+                string inputId = Console.ReadLine();
+
+                bool exists = appService
+                    .GetAllStudents()
+                    .Any(s => s.StudentID.Trim().ToLower() == inputId.Trim().ToLower());
+
+                if (exists)
+                {
+                    Console.WriteLine("A student with this Student ID already exists. Please try again.");
+                }
+                else
+                {
+                    student.StudentID = inputId;
+                    break;
+                }
+            }
+
+            Console.Write("Name (Surname, First Name M.I.): ");
+            student.Name = Console.ReadLine();
+
+            Console.Write("Course (e.g. BSIT): ");
+            student.Course = Console.ReadLine();
+
+            Console.Write("Year (e.g. 1): ");
+            student.Year = Console.ReadLine();
+
+            Console.Write("Contact No.: ");
+            student.ContactNo = Console.ReadLine();
+
+            Console.Write("Email: ");
+            student.Email = Console.ReadLine();
+
+            Console.Write("Full Address: ");
+            student.Address = Console.ReadLine();
+
+            Console.Write("Date of Birth: ");
+            student.DateOfBirth = Console.ReadLine();
+
+            return student;
         }
     }
 }
