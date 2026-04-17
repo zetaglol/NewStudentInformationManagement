@@ -13,7 +13,6 @@ namespace StudentManagementDataService
 
         public void Add(Student student)
         {
-            student.Id = Guid.NewGuid();
             students.Add(student);
         }
 
@@ -22,14 +21,14 @@ namespace StudentManagementDataService
             return students;
         }
 
-        public Student GetById(Guid id)
-        {
-            return students.FirstOrDefault(s => s.Id == id);
-        }
-
         public Student GetByStudentId(string studentId)
         {
             return students.FirstOrDefault(s => s.StudentID == studentId);
+        }
+
+        public bool ExistsByStudentId(string studentId)
+        {
+            return students.Any(s => s.StudentID == studentId);
         }
 
         public void Update(Student student)
@@ -38,7 +37,6 @@ namespace StudentManagementDataService
 
             if (existing != null)
             {
-                student.Id = existing.Id; // preserve Guid
                 int index = students.IndexOf(existing);
                 students[index] = student;
             }

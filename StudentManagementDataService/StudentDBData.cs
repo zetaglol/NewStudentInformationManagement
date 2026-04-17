@@ -18,14 +18,10 @@ namespace StudentManagementDataService
         public void Add(Student student)
         {
             string query = @"
-                INSERT INTO Students
-                (Id, StudentID, Name, Course, Year, ContactNo, Email, Address, DateOfBirth)
-                VALUES
-                (@id, @studentId, @name, @course, @year, @contactNo, @email, @address, @dob)";
+                INSERT INTO Students (StudentID, Name, Course, Year, ContactNo, Email, Address, DateOfBirth)
+                VALUES (@studentId, @name, @course, @year, @contactNo, @email, @address, @dob)";
 
             SqlCommand cmd = new SqlCommand(query, sqlConnection);
-
-            cmd.Parameters.AddWithValue("@id", student.Id);
             cmd.Parameters.AddWithValue("@studentId", student.StudentID);
             cmd.Parameters.AddWithValue("@name", student.Name);
             cmd.Parameters.AddWithValue("@course", student.Course);
@@ -55,7 +51,6 @@ namespace StudentManagementDataService
             {
                 Student student = new Student();
 
-                student.Id = Guid.Parse(reader["Id"].ToString());
                 student.StudentID = reader["StudentID"].ToString();
                 student.Name = reader["Name"].ToString();
                 student.Course = reader["Course"].ToString();
@@ -70,38 +65,6 @@ namespace StudentManagementDataService
 
             sqlConnection.Close();
             return students;
-        }
-
-        public Student GetById(Guid id)
-        {
-            Student student = null;
-
-            string query = "SELECT * FROM Students WHERE Id = @id";
-
-            SqlCommand cmd = new SqlCommand(query, sqlConnection);
-            cmd.Parameters.AddWithValue("@id", id);
-
-            sqlConnection.Open();
-            SqlDataReader reader = cmd.ExecuteReader();
-
-            if (reader.Read())
-            {
-                student = new Student
-                {
-                    Id = Guid.Parse(reader["Id"].ToString()),
-                    StudentID = reader["StudentID"].ToString(),
-                    Name = reader["Name"].ToString(),
-                    Course = reader["Course"].ToString(),
-                    Year = Convert.ToInt32(reader["Year"]),
-                    ContactNo = reader["ContactNo"].ToString(),
-                    Email = reader["Email"].ToString(),
-                    Address = reader["Address"].ToString(),
-                    DateOfBirth = reader["DateOfBirth"].ToString()
-                };
-            }
-
-            sqlConnection.Close();
-            return student;
         }
 
         public Student GetByStudentId(string studentId)
@@ -120,7 +83,6 @@ namespace StudentManagementDataService
             {
                 student = new Student
                 {
-                    Id = Guid.Parse(reader["Id"].ToString()),
                     StudentID = reader["StudentID"].ToString(),
                     Name = reader["Name"].ToString(),
                     Course = reader["Course"].ToString(),
@@ -148,11 +110,10 @@ namespace StudentManagementDataService
                     Email = @email,
                     Address = @address,
                     DateOfBirth = @dob
-                WHERE Id = @id";
+                WHERE StudentID = @studentId";
 
             SqlCommand cmd = new SqlCommand(query, sqlConnection);
 
-            cmd.Parameters.AddWithValue("@id", student.Id);
             cmd.Parameters.AddWithValue("@studentId", student.StudentID);
             cmd.Parameters.AddWithValue("@name", student.Name);
             cmd.Parameters.AddWithValue("@course", student.Course);
@@ -177,6 +138,20 @@ namespace StudentManagementDataService
             sqlConnection.Open();
             cmd.ExecuteNonQuery();
             sqlConnection.Close();
+        }
+
+        public bool ExistsByStudentId(string studentId)
+        {
+            string query = "SELECT COUNT(1) FROM Students WHERE StudentID = @studentId";
+
+            SqlCommand cmd = new SqlCommand(query, sqlConnection);
+            cmd.Parameters.AddWithValue("@studentId", studentId);
+
+            sqlConnection.Open();
+            int count = (int)cmd.ExecuteScalar();
+            sqlConnection.Close();
+
+            return count > 0;
         }
 
         public bool TestConnection()

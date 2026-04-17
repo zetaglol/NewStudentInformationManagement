@@ -26,8 +26,7 @@ namespace Student_Info_Management
 
                 if (!int.TryParse(Console.ReadLine(), out choice))
                 {
-                    Console.WriteLine("--------------------------------------");
-                    Console.WriteLine("Invalid input. Please enter a number between 1 and 5.");
+                    Console.WriteLine("\nInvalid input. Please enter a number between 1 and 5.\n");
                     continue;
                 }
 
@@ -46,16 +45,15 @@ namespace Student_Info_Management
                         for (int i = 0; i < students.Count; i++)
                         {
                             var s = students[i];
-
                             Console.WriteLine($"Student {i + 1}:");
-                            Console.WriteLine("Student ID: " + s.StudentID);
-                            Console.WriteLine("Full Name: " + s.Name);
-                            Console.WriteLine("Course: " + s.Course);
-                            Console.WriteLine("Year: " + s.Year);
-                            Console.WriteLine("Contact No.: " + s.ContactNo);
-                            Console.WriteLine("Email: " + s.Email);
-                            Console.WriteLine("Full Address: " + s.Address);
-                            Console.WriteLine("Date of Birth: " + s.DateOfBirth);
+                            Console.WriteLine($"Student ID: {s.StudentID}");
+                            Console.WriteLine($"Name: {s.Name}");
+                            Console.WriteLine($"Course: {s.Course}");
+                            Console.WriteLine($"Year: {s.Year}");
+                            Console.WriteLine($"Contact No.: {s.ContactNo}");
+                            Console.WriteLine($"Email: {s.Email}");
+                            Console.WriteLine($"Address: {s.Address}");
+                            Console.WriteLine($"Date of Birth: {s.DateOfBirth}");
                             Console.WriteLine();
                         }
                         break;
@@ -65,13 +63,11 @@ namespace Student_Info_Management
 
                         if (!appService.AddStudent(newStudent))
                         {
-                            Console.WriteLine("A student with this Student ID already exists.");
-                            Console.WriteLine();
+                            Console.WriteLine("A student with this Student ID already exists.\n");
                         }
                         else
                         {
-                            Console.WriteLine("Student Added Successfully!");
-                            Console.WriteLine();
+                            Console.WriteLine("Student Added Successfully!\n");
                         }
                         break;
 
@@ -79,41 +75,26 @@ namespace Student_Info_Management
                         Console.Write("Enter Student ID: ");
                         string updateId = Console.ReadLine();
 
-                        var existing = appService
-                            .GetAllStudents()
-                            .FirstOrDefault(s => s.StudentID.Trim().ToLower() == updateId.Trim().ToLower());
+                        var existing = appService.GetStudentById(updateId);
 
                         if (existing == null)
                         {
                             Console.WriteLine("Student not found.\n");
+                            Console.WriteLine();
                             break;
                         }
 
                         Student updatedStudent = new Student
                         {
-                            StudentID = updateId
+                            StudentID = updateId,
+                            Name = ReadRequiredString("Name: "),
+                            Course = ReadRequiredString("Course: "),
+                            Year = ReadInt("Year: ", 1, 4),
+                            ContactNo = ReadPhone(),
+                            Email = ReadEmail(),
+                            Address = ReadRequiredString("Address: "),
+                            DateOfBirth = ReadRequiredString("Date of Birth: ")
                         };
-
-                        Console.Write("Name: ");
-                        updatedStudent.Name = Console.ReadLine();
-
-                        Console.Write("Course: ");
-                        updatedStudent.Course = Console.ReadLine();
-
-                        Console.Write("Year: ");
-                        updatedStudent.Year = int.Parse(Console.ReadLine());
-
-                        Console.Write("Contact No.: ");
-                        updatedStudent.ContactNo = Console.ReadLine();
-
-                        Console.Write("Email: ");
-                        updatedStudent.Email = Console.ReadLine();
-
-                        Console.Write("Address: ");
-                        updatedStudent.Address = Console.ReadLine();
-
-                        Console.Write("Date of Birth: ");
-                        updatedStudent.DateOfBirth = Console.ReadLine();
 
                         appService.UpdateStudent(updatedStudent);
                         
@@ -125,17 +106,21 @@ namespace Student_Info_Management
                         string deleteId = Console.ReadLine();
 
                         if (!appService.DeleteStudent(deleteId))
-                            Console.WriteLine("Student not found.");
+                        {
+                            Console.WriteLine("Student not found.\n");
+                        }
                         else
-                            Console.WriteLine("Deleted Successfully!");
+                        {
+                            Console.WriteLine("Deleted Successfully!\n");
+                        }
                         break;
 
                     case 5:
-                        Console.WriteLine("Exiting the program...");
+                        Console.WriteLine("Exiting the program...\n");
                         break;
 
                     default:
-                        Console.WriteLine("Invalid choice. Please try again.");
+                        Console.WriteLine("Invalid choice. Please enter a number between 1 and 5.\n");
                         break;
                 }
             } while (choice != 5);
@@ -145,53 +130,90 @@ namespace Student_Info_Management
         {
             Student student = new Student();
 
-            while (true)
-            {
-                Console.Write("Student Number: ");
-                string inputId = Console.ReadLine();
+            Console.Write("Student Number: ");
+            student.StudentID = Console.ReadLine();
 
-                bool exists = appService
-                    .GetAllStudents()
-                    .Any(s => s.StudentID.Trim().ToLower() == inputId.Trim().ToLower());
+            student.Name = ReadRequiredString("Name: ");
 
-                if (exists)
-                {
-                    Console.WriteLine("A student with this Student ID already exists. Please try again.");
-                }
-                else
-                {
-                    student.StudentID = inputId;
-                    break;
-                }
-            }
+            student.Course = ReadRequiredString("Course: ");
 
-            Console.Write("Name (Surname, First Name M.I.): ");
-            student.Name = Console.ReadLine();
+            student.Year = ReadInt("Year: ", 1, 4);
 
-            Console.Write("Course (e.g. BSIT): ");
-            student.Course = Console.ReadLine();
+            student.ContactNo = ReadPhone();
 
-            Console.Write("Year (e.g. 1): ");
-            int year;
-            while (!int.TryParse(Console.ReadLine(), out year))
-            {
-                Console.Write("Invalid input. Enter a number: ");
-            }
-            student.Year = year;
+            student.Email = ReadEmail();
 
-            Console.Write("Contact No.: ");
-            student.ContactNo = Console.ReadLine();
+            student.Address = ReadRequiredString("Address: ");
 
-            Console.Write("Email: ");
-            student.Email = Console.ReadLine();
-
-            Console.Write("Full Address: ");
-            student.Address = Console.ReadLine();
-
-            Console.Write("Date of Birth: ");
-            student.DateOfBirth = Console.ReadLine();
+            student.DateOfBirth = ReadRequiredString("Date of Birth: ");
 
             return student;
+        }
+
+        private static string ReadRequiredString(string prompt)
+        {
+            string input;
+
+            while (true)
+            {
+                Console.Write(prompt);
+                input = Console.ReadLine();
+
+                if (!string.IsNullOrWhiteSpace(input))
+                    return input;
+
+                Console.WriteLine("Input cannot be empty.\n");
+            }
+        }
+
+        private static int ReadInt(string prompt, int min = 0, int max = int.MaxValue)
+        {
+            int value;
+
+            while (true)
+            {
+                Console.Write(prompt);
+
+                if (int.TryParse(Console.ReadLine(), out value) &&
+                    value >= min && value <= max)
+                {
+                    return value;
+                }
+
+                Console.WriteLine($"Invalid input. Enter a number between {min} and {max}.\n");
+            }
+        }
+
+        private static string ReadEmail()
+        {
+            string email;
+
+            while (true)
+            {
+                Console.Write("Email: ");
+                email = Console.ReadLine();
+
+                if (!string.IsNullOrWhiteSpace(email) && email.Contains("@"))
+                    return email;
+
+                Console.WriteLine("Invalid email format.\n");
+            }
+        }
+
+        private static string ReadPhone()
+        {
+            string phone;
+
+            while (true)
+            {
+                Console.Write("Contact No.: ");
+                phone = Console.ReadLine();
+
+                if (!string.IsNullOrWhiteSpace(phone) && phone.All(char.IsDigit))
+                    return phone;
+
+                Console.WriteLine("Contact number must contain digits only.\n");
+            }
         }
     }
 }

@@ -8,10 +8,9 @@ namespace StudentManagementDataService
     {
         void Add(Student student);
         List<Student> GetAll();
-        Student GetById(Guid id);
-
         Student GetByStudentId(string studentId);
         void Update(Student student);
         void DeleteByStudentId(string studentId);
+        bool ExistsByStudentId(string studentId);
     }
 }

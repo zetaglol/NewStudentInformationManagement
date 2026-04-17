@@ -19,13 +19,19 @@ namespace StudentManagementAppService
             return _dataService.GetAll();
         }
 
+        public Student GetStudentById(string studentId)
+        {
+            return _dataService.GetByStudentId(studentId);
+        }
+
+        public bool StudentExists(string studentId)
+        {
+            return _dataService.ExistsByStudentId(studentId);
+        }
+
         public bool AddStudent(Student student)
         {
-            bool exists = _dataService
-                .GetAll()
-                .Any(s => s.StudentID.Trim().ToLower() == student.StudentID.Trim().ToLower());
-
-            if (exists)
+            if (_dataService.ExistsByStudentId(student.StudentID))
                 return false;
 
             _dataService.Add(student);
