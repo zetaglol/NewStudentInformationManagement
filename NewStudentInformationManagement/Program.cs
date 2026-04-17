@@ -10,7 +10,7 @@ namespace Student_Info_Management
     {
         static void Main(string[] args)
         {
-            IStudentDataService dataService = new StudentJsonData();
+            IStudentDataService dataService = new StudentDBData();
             var appService = new StudentAppService(dataService);
             int choice;
 
@@ -101,7 +101,7 @@ namespace Student_Info_Management
                         updatedStudent.Course = Console.ReadLine();
 
                         Console.Write("Year: ");
-                        updatedStudent.Year = Console.ReadLine();
+                        updatedStudent.Year = int.Parse(Console.ReadLine());
 
                         Console.Write("Contact No.: ");
                         updatedStudent.ContactNo = Console.ReadLine();
@@ -172,7 +172,12 @@ namespace Student_Info_Management
             student.Course = Console.ReadLine();
 
             Console.Write("Year (e.g. 1): ");
-            student.Year = Console.ReadLine();
+            int year;
+            while (!int.TryParse(Console.ReadLine(), out year))
+            {
+                Console.Write("Invalid input. Enter a number: ");
+            }
+            student.Year = year;
 
             Console.Write("Contact No.: ");
             student.ContactNo = Console.ReadLine();
