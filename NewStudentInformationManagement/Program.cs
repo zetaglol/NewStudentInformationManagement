@@ -10,7 +10,7 @@ namespace Student_Info_Management
     {
         static void Main(string[] args)
         {
-            var dataService = new StudentDataService();
+            IStudentDataService dataService = new StudentJsonData();
             var appService = new StudentAppService(dataService);
             int choice;
 
@@ -35,7 +35,29 @@ namespace Student_Info_Management
                 switch (choice)
                 {
                     case 1:
-                        dataService.ViewStudents();
+                        var students = appService.GetAllStudents();
+
+                        if (students.Count == 0)
+                        {
+                            Console.WriteLine("No records found.\n");
+                            break;
+                        }
+
+                        for (int i = 0; i < students.Count; i++)
+                        {
+                            var s = students[i];
+
+                            Console.WriteLine($"Student {i + 1}:");
+                            Console.WriteLine("Student ID: " + s.StudentID);
+                            Console.WriteLine("Full Name: " + s.Name);
+                            Console.WriteLine("Course: " + s.Course);
+                            Console.WriteLine("Year: " + s.Year);
+                            Console.WriteLine("Contact No.: " + s.ContactNo);
+                            Console.WriteLine("Email: " + s.Email);
+                            Console.WriteLine("Full Address: " + s.Address);
+                            Console.WriteLine("Date of Birth: " + s.DateOfBirth);
+                            Console.WriteLine();
+                        }
                         break;
 
                     case 2:
