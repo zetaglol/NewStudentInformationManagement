@@ -51,28 +51,5 @@ namespace StudentManagementDataService
                 students.Remove(student);
             }
         }
-
-        public void ViewStudents()
-        {
-            if (students.Count == 0)
-            {
-                Console.WriteLine("No records found. Please make a new record.");
-                Console.WriteLine();
-                return;
-            }
-
-            for (int i = 0; i < students.Count; i++)
-            {
-                Console.WriteLine("Student {0}:", i + 1);
-                Console.WriteLine("Student ID: " + students[i].StudentID);
-                Console.WriteLine("Full Name: " + students[i].Name);
-                Console.WriteLine("Course: " + students[i].Course);
-                Console.WriteLine("Year: " + students[i].Year);
-                Console.WriteLine("Contact No.: " + students[i].ContactNo);
-                Console.WriteLine("Email: " + students[i].Email);
-                Console.WriteLine("Full Address: " + students[i].Address);
-                Console.WriteLine("Date of Birth: " + students[i].DateOfBirth);
-            }
-        }
     }
 }
