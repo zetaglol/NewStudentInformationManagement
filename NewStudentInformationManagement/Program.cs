@@ -10,7 +10,7 @@ namespace Student_Info_Management
     {
         static void Main(string[] args)
         {
-            IStudentDataService dataService = new StudentDBData();
+            IStudentDataService dataService = new StudentJsonData();
             var appService = new StudentAppService(dataService);
             int choice;
 
@@ -62,15 +62,9 @@ namespace Student_Info_Management
                     case 2:
                         Student newStudent = ReadStudentInput(appService);
 
-                        if (!appService.AddStudent(newStudent))
-                        {
-                            Console.WriteLine("A student with this Student ID already exists.\n");
-                        }
-                        else
-                        {
-                            Console.WriteLine("\n================================================");
-                            Console.WriteLine("Student Added Successfully!\n");
-                        }
+                        appService.AddStudent(newStudent);
+
+                        Console.WriteLine("Student Added Successfully!\n");
                         break;
 
                     case 3:
@@ -136,14 +130,31 @@ namespace Student_Info_Management
         {
             Student student = new Student();
 
-            Console.Write("Student Number: ");
-            student.StudentID = Console.ReadLine();
+            while (true)
+            {
+                Console.Write("Student Number: ");
+                student.StudentID = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(student.StudentID))
+                {
+                    Console.WriteLine("Student ID cannot be empty.\n");
+                    continue;
+                }
+
+                if (appService.StudentExists(student.StudentID))
+                {
+                    Console.WriteLine("\nA student with this Student ID already exists.");
+                    continue;
+                }
+                break;
+            }
 
             student.Name = ReadRequiredString("Full Name (Surname, First Name M.I.): ");
 
             student.Course = ReadRequiredString("Course (e.g. BSIT): ");
 
             student.Year = ReadInt("Year (e.g. 1): ", 1, 4);
+
             student.ContactNo = ReadPhone();
 
             student.Email = ReadEmail();
